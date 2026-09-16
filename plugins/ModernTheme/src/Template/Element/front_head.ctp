@@ -12,13 +12,16 @@
 
 <?= $this->Assets->favicon() ?>
 
-<!-- Inter — modern SaaS font -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<!-- LinkMorph design system overrides — loaded after theme CSS -->
+<!-- Google Fonts: Inter -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <style>
-:root{--lm-dark:#0f172a;--lm-dark-mid:#1e293b;--lm-dark-surface:#334155;--lm-accent:#22c55e;--lm-accent-hover:#16a34a;--lm-accent-light:rgba(34,197,94,.12);--lm-purple:#7c3aed;--lm-purple-end:#4f46e5;--lm-text:#1e293b;--lm-muted:#64748b;--lm-border:#e2e8f0;--lm-surface:#fff;--lm-page:#f8fafc;--lm-radius:12px;--lm-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);--lm-shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);--lm-shadow-lg:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05)}
-*,::after,::before{box-sizing:border-box}
-body{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,sans-serif!important;color:var(--lm-text);background:var(--lm-page)}
+/* Global Font Override */
+body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6, p, a, button, input, select, textarea {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
 </style>
 
 <?php
@@ -43,8 +46,6 @@ echo $this->fetch('script');
 <?= get_option('head_code'); ?>
 <?= $this->fetch('scriptTop') ?>
 
-<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>

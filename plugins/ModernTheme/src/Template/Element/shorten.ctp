@@ -44,34 +44,38 @@ $is_logged_in = null !== $this->request->getSession()->read('Auth.User.id');
     <?= $this->Form->hidden('ad_type', ['value' => $ad_type]); ?>
 
     <?= $this->Form->button(__('Shorten') . ' →', [
-        'class' => 'btn-captcha',
+        'class' => 'btn-captcha btn-primary',
         'id'    => 'invisibleCaptchaShort',
     ]); ?>
 </div>
 
 <!-- Custom alias row — only shown to logged-in users whose plan allows it -->
 <?php if ($is_logged_in) : ?>
-<div class="hero-alias-row" id="lm-alias-row">
-    <button type="button" class="alias-toggle-btn" id="lm-alias-toggle">
-        <i class="fa fa-tag"></i> <?= __('+ Add custom alias (optional)') ?>
-    </button>
-    <div class="alias-input-wrap" id="lm-alias-wrap" style="display:none;">
-        <div class="alias-input-inner">
-            <span class="alias-prefix"><?= rtrim(build_main_domain_url('/'), '/') ?>/</span>
-            <?=
-            $this->Form->control('alias', [
-                'label'       => false,
-                'type'        => 'text',
-                'placeholder' => __('my-brand-name'),
-                'class'       => 'form-control alias-field',
-                'id'          => 'lm-alias-input',
-                'pattern'     => '[A-Za-z0-9_-]+',
-                'title'       => __('Letters, numbers, hyphens and underscores only'),
-                'maxlength'   => '50',
-            ]);
-            ?>
-        </div>
-        <p class="alias-hint"><?= __('Leave blank to auto-generate. Letters, numbers, hyphens only.') ?></p>
+<div class="advanced-options-toggle">
+    <a id="lm-alias-toggle"><i class="fa fa-tag"></i> <?= __('+ Add custom alias (optional)') ?></a>
+</div>
+<div class="advanced-options-panel" id="lm-alias-wrap" style="display:none; max-width: 500px; margin: 15px auto 0;">
+    <label for="lm-alias-input" style="display:block; margin-bottom: 5px;"><?= __('Custom Alias') ?></label>
+    <div style="display: flex; align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #fff; overflow: hidden;">
+        <span style="padding: 10px 12px; background: var(--color-bg-light); color: var(--color-text-muted); border-right: 1px solid var(--color-border); font-size: 14px;">
+            <?= rtrim(build_main_domain_url('/'), '/') ?>/
+        </span>
+        <?=
+        $this->Form->control('alias', [
+            'label'       => false,
+            'type'        => 'text',
+            'placeholder' => __('my-brand-name'),
+            'class'       => 'form-control',
+            'id'          => 'lm-alias-input',
+            'pattern'     => '[A-Za-z0-9_-]+',
+            'title'       => __('Letters, numbers, hyphens and underscores only'),
+            'maxlength'   => '50',
+            'style'       => 'border: none; border-radius: 0; box-shadow: none; flex: 1;'
+        ]);
+        ?>
+    </div>
+    <div style="font-size: 12px; color: var(--color-text-muted); margin-top: 5px;">
+        <?= __('Leave blank to auto-generate. Letters, numbers, hyphens only.') ?>
     </div>
 </div>
 <?php endif; ?>
@@ -93,79 +97,6 @@ $is_logged_in = null !== $this->request->getSession()->read('Auth.User.id');
 <div class="shorten add-link-result"></div>
 
 <?php $this->start('scriptBottom'); ?>
-<style>
-/* ── Custom Alias UI ──────────────────────────────────────── */
-.hero-alias-row {
-    text-align: center;
-    margin-top: 14px;
-}
-.alias-toggle-btn {
-    background: none;
-    border: none;
-    color: rgba(255,255,255,.55);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 6px 0;
-    font-family: 'Inter', sans-serif;
-    transition: color .2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-.alias-toggle-btn:hover { color: #22c55e; }
-.alias-input-wrap {
-    margin-top: 12px;
-    animation: lm-fade-in .25s ease;
-}
-@keyframes lm-fade-in {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-.alias-input-inner {
-    display: inline-flex;
-    align-items: center;
-    background: rgba(255,255,255,.07);
-    border: 1px solid rgba(255,255,255,.18);
-    border-radius: 10px;
-    overflow: hidden;
-    max-width: 420px;
-    width: 100%;
-    backdrop-filter: blur(8px);
-    transition: border-color .2s, box-shadow .2s;
-}
-.alias-input-inner:focus-within {
-    border-color: rgba(34,197,94,.5);
-    box-shadow: 0 0 0 3px rgba(34,197,94,.15);
-}
-.alias-prefix {
-    padding: 12px 12px 12px 16px;
-    color: rgba(255,255,255,.4);
-    font-size: 13px;
-    white-space: nowrap;
-    font-family: 'Inter', sans-serif;
-    border-right: 1px solid rgba(255,255,255,.1);
-}
-.alias-field {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    color: #fff !important;
-    font-size: 15px;
-    padding: 12px 14px !important;
-    flex: 1;
-    font-family: 'Inter', sans-serif;
-    height: auto !important;
-}
-.alias-field::placeholder { color: rgba(255,255,255,.3); }
-.alias-field:focus { outline: none; box-shadow: none; }
-.alias-hint {
-    margin-top: 8px;
-    font-size: 12px;
-    color: rgba(255,255,255,.35);
-    font-family: 'Inter', sans-serif;
-}
-</style>
 <script>
 (function () {
     'use strict';
