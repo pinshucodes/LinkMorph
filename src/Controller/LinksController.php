@@ -77,6 +77,35 @@ class LinksController extends FrontController
             throw new ForbiddenException(__('The link has been expired'));
         }
 
+        // ── Password gate ──────────────────────────────────────────────
+        if (!empty($link->link_password)) {
+            $sessionKey = 'LinkPassword_' . $link->alias;
+
+            // Check if already verified this session
+            if (!$this->getRequest()->getSession()->read($sessionKey)) {
+                // POST = visitor submitted the password form
+                if ($this->getRequest()->is('post') && $this->getRequest()->getData('lm_link_password')) {
+                    $submitted = $this->getRequest()->getData('lm_link_password');
+                    if (password_verify($submitted, $link->link_password)) {
+                        // Correct — mark session and continue
+                        $this->getRequest()->getSession()->write($sessionKey, true);
+                    } else {
+                        $this->Flash->error(__('Incorrect password. Please try again.'));
+                        $this->set('link', $link);
+                        $this->set('requirePassword', true);
+                        $this->viewBuilder()->setLayout('front');
+                        return $this->render('password');
+                    }
+                } else {
+                    // GET — show password form
+                    $this->set('link', $link);
+                    $this->set('requirePassword', true);
+                    $this->viewBuilder()->setLayout('front');
+                    return $this->render('password');
+                }
+            }
+        }
+
         $detector = new \Detection\MobileDetect();
         if ((bool)$detector->is("Bot")) {
             if ((bool)validCrawler()) {

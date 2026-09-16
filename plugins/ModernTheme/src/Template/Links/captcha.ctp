@@ -100,11 +100,13 @@ $this->assign('og_image', $link->image);
         </div>
     <?php endif; ?>
 
-</div>
+<?php $this->start('scriptBottom'); ?>
+<?php if (!empty($link->pixel_code)) : ?>
+<!-- Retargeting pixel — injected by link owner -->
+<?= $link->pixel_code ?>
+<?php endif; ?>
+<?php $this->end(); ?>
 
-<div class="text-left">
-
-    <h3><?= __('What is {0}?', h(get_option('site_name'))) ?></h3>
     <p><?= __(
             '{0} is a completely free tool where you can create short links, which apart from being ' .
             'free, you get paid! So, now you can make money from home, when managing and protecting your links. ' .

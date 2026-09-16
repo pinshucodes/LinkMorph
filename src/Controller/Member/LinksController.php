@@ -181,9 +181,33 @@ class LinksController extends AppMemberController
         if ($this->getRequest()->is(['post', 'put'])) {
             $this->setRequest($this->getRequest()->withData('user_id', $this->Auth->user('id')));
 
-            $link = $this->Links->patchEntity($link, $this->getRequest()->getData());
+            $link = $this->Links->patchEntity($link, $this->getRequest()->getData(), [
+                // Exclude our virtual fields from mass-assignment; handle manually
+                'fieldList' => ['url', 'title', 'description', 'expiration', 'ad_type', 'pixel_code'],
+            ]);
 
-            $link->url_hash = sha1($link->url);
+            // ── Password protection ──────────────────────────────
+            $rawPassword = trim($this->getRequest()->getData('link_password_raw', ''));
+            $removePassword = (bool)$this->getRequest()->getData('remove_password', false);
+
+            if ($removePassword) {
+                // User explicitly checked "remove password"
+                $link->link_password = null;
+            } elseif (!empty($rawPassword)) {
+                // Hash with bcrypt — never store plaintext
+                $link->link_password = password_hash($rawPassword, PASSWORD_BCRYPT, ['cost' => 12]);
+            }
+            // If both empty and not removing → keep existing hash (patchEntity ignores it above)
+
+            // ── Retargeting pixel ────────────────────────────────
+            // Allow <script>, <img>, <noscript> but strip PHP, onclick etc.
+            $pixelCode = $this->getRequest()->getData('pixel_code', '');
+            // Basic sanitisation: strip PHP tags only; JS is needed for pixels
+            $pixelCode = preg_replace('/<\?php.*?\?>/si', '', $pixelCode);
+            $pixelCode = preg_replace('/<\?=.*?\?>/si', '', $pixelCode);
+            $link->pixel_code = $pixelCode;
+
+            $link->url_hash     = sha1($link->url);
             $link->last_activity = Time::now();
 
             if ($this->Links->save($link)) {
@@ -191,7 +215,6 @@ class LinksController extends AppMemberController
 
                 return $this->redirect(['action' => 'edit', $alias]);
             } else {
-                //debug( $link->errors() );
                 $this->Flash->error(__('Oops! There are mistakes in the form. Please make the correction.'));
             }
         }
