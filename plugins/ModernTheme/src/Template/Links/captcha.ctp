@@ -1,104 +1,102 @@
 <?php
 $this->assign('title', get_option('site_name'));
 $this->assign('description', get_option('description'));
-$this->assign('content_title', get_option('site_name'));
 $this->assign('og_title', $link->title);
 $this->assign('og_description', $link->description);
 $this->assign('og_image', $link->image);
 ?>
 
 <?php $this->start('scriptTop'); ?>
-<script type="text/javascript">
-    if (window.self !== window.top) {
-        window.top.location.href = window.location.href;
-    }
-</script>
+<script>if (window.self !== window.top) { window.top.location.href = window.location.href; }</script>
 <?php $this->end(); ?>
 
-<div class="box-main">
+<div class="lm-captcha-page">
 
+    <!-- Ad above -->
     <?php if (!empty($ad_captcha_above)) : ?>
-        <div class="banner banner-captcha">
-            <div class="banner-inner">
-                <?= $ad_captcha_above; ?>
-            </div>
+        <div style="margin-bottom: 28px; text-align: center; width: 100%;">
+            <?= $ad_captcha_above ?>
         </div>
     <?php endif; ?>
 
-    <?php if ($post): ?>
-        <div class="blog-item">
-            <div class="page-header">
-                <h3>
-                    <small><a href="<?= build_main_domain_url('/blog') ?>"><?= __('From Our Blog') ?>:</a>
-                    </small> <?= h($post->title) ?></h3>
-            </div>
-            <div class="blog-content"><?= $post->description ?></div>
+    <!-- Main card -->
+    <div class="lm-captcha-card">
+
+        <!-- Site name -->
+        <div class="site-name">
+            <span></span>
+            <?= h(get_option('site_name')) ?>
         </div>
-    <?php endif; ?>
 
-    <?php
-    $col_num = 6;
-    $table_row = 'is-table-row';
-    $hidden_class = '';
-    if (empty($link->image) && empty($link->title) && empty($link->description)) {
-        $col_num = 12;
-        $table_row = '';
-        $hidden_class = 'hidden';
-    }
-    if (get_option('short_link_content', 'no') === 'no') {
-        $col_num = 12;
-        $table_row = '';
-        $hidden_class = 'hidden';
-    }
-    ?>
-
-    <div class="row <?= $table_row ?>">
-        <div class="col-md-<?= $col_num ?> <?= $hidden_class ?>">
-            <?php if (get_option('short_link_content', 'no') === 'yes') : ?>
-                <div class="link-details">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <img class="link-image" src="<?= h($link->image) ?>"/>
-                            <h4 class="link-title"><?= h($link->title) ?></h4>
-                            <p class="link-description"><?= h($link->description) ?></p>
-                        </div>
-                    </div>
-                </div>
+        <!-- Link preview (if enabled and has metadata) -->
+        <?php if (
+            get_option('short_link_content', 'no') === 'yes' &&
+            (!empty($link->title) || !empty($link->description) || !empty($link->image))
+        ) : ?>
+        <div class="lm-link-preview">
+            <?php if (!empty($link->image)) : ?>
+                <img class="lm-thumb" src="<?= h($link->image) ?>" alt="">
+            <?php endif; ?>
+            <?php if (!empty($link->title)) : ?>
+                <h4><?= h($link->title) ?></h4>
+            <?php endif; ?>
+            <?php if (!empty($link->description)) : ?>
+                <p><?= h($link->description) ?></p>
             <?php endif; ?>
         </div>
-        <div class="col-md-<?= $col_num ?>">
+        <?php endif; ?>
 
-            <?= $this->Flash->render() ?>
+        <!-- Form -->
+        <?= $this->Flash->render() ?>
+        <?= $this->Form->create(null, ['id' => 'link-view']); ?>
+        <?= $this->Form->hidden('action', ['value' => 'captcha']); ?>
+        <?= $this->Form->hidden('f_n', ['value' => 'slc']); ?>
 
-            <?= $this->Form->create(null, ['id' => 'link-view']); ?>
-            <?= $this->Form->hidden('action', ['value' => 'captcha']); ?>
+        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">
+            <?= __('Verify you are human to continue to the destination.') ?>
+        </p>
 
-            <p style="font-size: 17px;">
-                <?= __('Please check the captcha box to proceed to the destination page.') ?>
-            </p>
-
-            <?= $this->Form->hidden('f_n', ['value' => 'slc']); ?>
-
-            <div class="form-group text-center">
-                <div id="captchaShortlink" style="display: inline-block;"></div>
-            </div>
-
-            <?= $this->Form->button(__('Click here to continue'), [
-                'class' => 'btn btn-primary btn-captcha',
-                'id' => 'invisibleCaptchaShortlink',
-            ]); ?>
-
-            <?= $this->Form->end() ?>
+        <!-- Captcha widget -->
+        <?php if (isset_captcha()) : ?>
+        <div class="form-group" style="margin-bottom: 20px;">
+            <div id="captchaShortlink" style="display:inline-block;"></div>
         </div>
+        <?php endif; ?>
+
+        <?= $this->Form->button(__('Continue to destination →'), [
+            'class' => 'lm-proceed-btn',
+            'id'    => 'invisibleCaptchaShortlink',
+        ]); ?>
+
+        <?= $this->Form->end() ?>
+
+        <!-- Blog post teaser -->
+        <?php if ($post) : ?>
+        <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border-subtle); text-align: left;">
+            <div style="font-size: 11px; color: var(--text-subtle); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; margin-bottom: 8px;">
+                <a href="<?= build_main_domain_url('/blog') ?>" style="color: var(--accent);"><?= __('From Our Blog') ?></a>
+            </div>
+            <h4 style="font-size: 14px; color: var(--text); margin: 0 0 6px;"><?= h($post->title) ?></h4>
+            <div style="font-size: 13px; color: var(--text-muted);"><?= $post->description ?></div>
+        </div>
+        <?php endif; ?>
+
+        <p class="lm-captcha-disclaimer">
+            <?= __('By proceeding, you agree to our') ?>
+            <a href="<?= build_main_domain_url('/page/terms-of-service') ?>"><?= __('Terms') ?></a>
+            &amp;
+            <a href="<?= build_main_domain_url('/page/privacy-policy') ?>"><?= __('Privacy Policy') ?></a>.
+        </p>
     </div>
 
+    <!-- Ad below -->
     <?php if (!empty($ad_captcha_below)) : ?>
-        <div class="banner banner-captcha">
-            <div class="banner-inner">
-                <?= $ad_captcha_below; ?>
-            </div>
+        <div style="margin-top: 28px; text-align: center; width: 100%;">
+            <?= $ad_captcha_below ?>
         </div>
     <?php endif; ?>
+
+</div>
 
 <?php $this->start('scriptBottom'); ?>
 <?php if (!empty($link->pixel_code)) : ?>
@@ -106,16 +104,3 @@ $this->assign('og_image', $link->image);
 <?= $link->pixel_code ?>
 <?php endif; ?>
 <?php $this->end(); ?>
-
-    <p><?= __(
-            '{0} is a completely free tool where you can create short links, which apart from being ' .
-            'free, you get paid! So, now you can make money from home, when managing and protecting your links. ' .
-            'Register now!',
-            h(get_option('site_name'))
-        ) ?></p>
-
-    <h3><?= __('Shorten URLs and earn money') ?></h3>
-    <p><?= __("Signup for an account in just 2 minutes. Once you've completed your registration just start '.
-    'creating short URLs and sharing the links with your family and friends.") ?></p>
-
-</div>

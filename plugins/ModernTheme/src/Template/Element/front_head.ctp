@@ -12,16 +12,11 @@
 
 <?= $this->Assets->favicon() ?>
 
-<!-- Google Fonts: Inter -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+<!-- System fonts only — no external CDN required -->
 <style>
-/* Global Font Override */
-body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6, p, a, button, input, select, textarea {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
-}
+  * { box-sizing: border-box; }
+  /* FOUT prevention — hide body until CSS loads */
+  body { background: #09090b; }
 </style>
 
 <?php
